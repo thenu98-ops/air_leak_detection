@@ -17,7 +17,7 @@ export function App() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="flex min-h-screen w-full bg-canvas font-sans text-ink">
-        <Sidebar view={view} onChange={setView} openAlerts={telemetry.leakDetected ? 1 : 0} />
+        <Sidebar view={view} onChange={setView} openAlerts={telemetry.leakDetected ? 1 : 0} mqttConnected={telemetry.mqttConnected} />
         <div className="flex min-w-0 flex-1 flex-col">
           <TopBar 
             view={view} 

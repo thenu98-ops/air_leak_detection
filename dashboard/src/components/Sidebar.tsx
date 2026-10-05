@@ -7,10 +7,11 @@ interface SidebarProps {
   view: View;
   onChange: (view: View) => void;
   openAlerts: number;
+  mqttConnected: boolean;
 }
 
-export function Sidebar({ view, onChange, openAlerts }: SidebarProps) {
-  return (
+export function Sidebar({ view, onChange, openAlerts, mqttConnected }: SidebarProps) {
+    return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col p-4 lg:flex">
       <div className="flex h-full flex-col rounded-4xl bg-brand-deep p-4 text-white">
         <div className="flex items-center gap-3 px-2 pb-8 pt-2">
@@ -56,8 +57,8 @@ export function Sidebar({ view, onChange, openAlerts }: SidebarProps) {
           <p className="text-xs text-white/55">Edge device</p>
           <p className="mt-1 font-mono text-lg font-semibold">C3 Super Mini</p>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-white/70">
-            <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden="true" />
-            Online &middot; Main line
+            <span className={`h-1.5 w-1.5 rounded-full ${mqttConnected ? 'bg-signal' : 'bg-red-500'}`} aria-hidden="true" />
+            {mqttConnected ? 'Online' : 'Offline'}
           </p>
         </div>
       </div>

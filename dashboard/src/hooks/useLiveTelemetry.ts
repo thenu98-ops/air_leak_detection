@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { format } from 'date-fns';
 import { socket } from '../socket';
 import type { TelemetryPoint } from '../types/telemetry';
@@ -33,6 +33,7 @@ export function useLiveTelemetry(): LiveTelemetry {
   const [energyLossKWh, setEnergyLossKWh] = useState(0);
   const [serverConnected, setServerConnected] = useState(socket.connected);
   const [mqttConnected, setMqttConnected] = useState(false);
+  const sensorTimeout = useRef<any>(null);
   const [leakDetected, setLeakDetected] = useState(false);
   const [severity, setSeverity] = useState<any>(null);
   const [action, setAction] = useState<string>('');
@@ -55,8 +56,15 @@ export function useLiveTelemetry(): LiveTelemetry {
 
     // Listen to live telemetry
     const handleTelemetry = (rec: any) => {
+      setMqttConnected(true);
+      if (sensorTimeout.current) clearTimeout(sensorTimeout.current);
+      sensorTimeout.current = setTimeout(() => {
+        setMqttConnected(false);
+      }, 5000);
+
       setMessages((m) => m + 1);
       setLatencyMs(Date.now() - new Date(rec.ts).getTime());
+
       
       if (rec.finance) {
         setFinancialLossLKR(rec.finance.financialLossLKR || 0);
@@ -94,18 +102,16 @@ export function useLiveTelemetry(): LiveTelemetry {
       setServerConnected(false);
       setMqttConnected(false);
     };
-    const onMqttStatus = (status: { connected: boolean }) => setMqttConnected(status.connected);
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('mqtt_status', onMqttStatus);
     socket.on('telemetry', handleTelemetry);
     
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('mqtt_status', onMqttStatus);
       socket.off('telemetry', handleTelemetry);
+      if (sensorTimeout.current) clearTimeout(sensorTimeout.current);
     };
   }, []);
 

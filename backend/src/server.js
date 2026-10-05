@@ -2,7 +2,7 @@ const http = require('http');
 const express = require('express');
 const { Server } = require('socket.io');
 const mqtt = require('mqtt');
-require('dotenv').config({ path: require('path').join(__dirname, '../../atlas-credentials.env') });
+require('dotenv').config({ path: require('path').join(__dirname, '../../dashboard/atlas-credentials.env') });
 
 const CFG = require('./config');
 const { repo } = require('./db');
