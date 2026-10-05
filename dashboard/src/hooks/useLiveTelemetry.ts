@@ -41,7 +41,8 @@ export function useLiveTelemetry(): LiveTelemetry {
 
   useEffect(() => {
     // Fetch initial history
-    fetch('http://localhost:3000/api/history/esp32-01')
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+    fetch(`${BACKEND_URL}/api/history/esp32-01`)
       .then(res => res.json())
       .then((history: any[]) => {
         const pts = history.map((rec) => ({
