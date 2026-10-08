@@ -1,5 +1,5 @@
 export type Status = 'normal' | 'warning' | 'critical';
-export type View = 'monitoring' | 'leak_detection' | 'energy_maintenance' | 'history';
+export type View = 'monitoring' | 'leak_detection' | 'energy_maintenance' | 'history' | 'configuration';
 
 export interface TelemetryPoint {
   time: string;

@@ -37,10 +37,55 @@ app.get('/api/history/:id', async (req, res) => {
   res.json(data.reverse());
 });
 
+const fs = require('fs');
+const path = require('path');
+
+app.get('/api/config', (req, res) => {
+  res.json({
+    leakThreshold: CFG.detection.leakThresholdHPaPerSec,
+    usageThreshold: CFG.detection.usageThresholdHPaPerSec,
+    tariffLkr: CFG.finance.tariffLkrPerKwh,
+    tankVolume: CFG.system.tankVolumeL
+  });
+});
+
+app.use(express.json());
+app.post('/api/config', (req, res) => {
+  const { leakThreshold, usageThreshold, tariffLkr, tankVolume } = req.body;
+  
+  if (leakThreshold !== undefined) CFG.detection.leakThresholdHPaPerSec = Number(leakThreshold);
+  if (usageThreshold !== undefined) CFG.detection.usageThresholdHPaPerSec = Number(usageThreshold);
+  if (tariffLkr !== undefined) CFG.finance.tariffLkrPerKwh = Number(tariffLkr);
+  if (tankVolume !== undefined) CFG.system.tankVolumeL = Number(tankVolume);
+
+  const savedConfig = {
+    normal_drop_rate_hPa_sec: CFG.detection.leakThresholdHPaPerSec,
+    usage_drop_rate_hPa_sec: CFG.detection.usageThresholdHPaPerSec,
+    electricity_unit_price: CFG.finance.tariffLkrPerKwh,
+    tank_volume_L: CFG.system.tankVolumeL
+  };
+  fs.writeFileSync(path.join(__dirname, '../config.json'), JSON.stringify(savedConfig, null, 2));
+  
+  res.json({ success: true });
+});
+
 let mqttConnected = false;
 
 io.on('connection', (socket) => {
   socket.emit('mqtt_status', { connected: mqttConnected });
+
+  socket.on('set_pressure', (data) => {
+    if (!mqttConnected || !data.deviceId || !data.targetPressure) return;
+    const command = JSON.stringify({
+      device_id: data.deviceId,
+      targetPressure: data.targetPressure,
+      ts: Date.now()
+    });
+    client.publish(COMMAND_TOPIC, command, { qos: 1 }, (err) => {
+      if (err) console.error('Failed to publish target pressure:', err);
+      else console.log(`Published target pressure to ${data.deviceId}: ${data.targetPressure} hPa`);
+    });
+  });
 });
 
 const client = mqtt.connect(CFG.mqtt.url);

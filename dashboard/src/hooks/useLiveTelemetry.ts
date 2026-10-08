@@ -20,6 +20,7 @@ export interface LiveTelemetry {
   severity: any;
   action: string;
   leakRateLpm: number;
+  currentDropRate: number;
 }
 
 export function useLiveTelemetry(): LiveTelemetry {
@@ -38,6 +39,7 @@ export function useLiveTelemetry(): LiveTelemetry {
   const [severity, setSeverity] = useState<any>(null);
   const [action, setAction] = useState<string>('');
   const [leakRateLpm, setLeakRateLpm] = useState<number>(0);
+  const [currentDropRate, setCurrentDropRate] = useState<number>(0);
 
   useEffect(() => {
     // Fetch initial history
@@ -48,7 +50,7 @@ export function useLiveTelemetry(): LiveTelemetry {
         const pts = history.map((rec) => ({
           time: format(new Date(rec.ts), 'HH:mm:ss'),
           pressure: round((rec.detection?.pressureKPa || 0) * 10, 0), // kPa to hPa
-          flow: round(rec.raw?.flow_Lpm || 0, 2),
+          flow: round((rec.raw?.flow_Lpm || 0) * 16.6667, 0),
           temp: round(rec.raw?.temp_C || 0, 1),
         })).slice(-WINDOW);
         setPoints(pts);
@@ -75,6 +77,9 @@ export function useLiveTelemetry(): LiveTelemetry {
       if (rec.detection) {
         setLeakDetected(rec.detection.leakDetected || false);
         setLeakRateLpm(rec.detection.leakRateLpm || 0);
+        // Multiply slope by -1 so that a negative slope (pressure dropping) shows as a positive drop rate.
+        // A positive slope (pressure rising) will show as a negative drop rate, making it easy to preview live.
+        setCurrentDropRate(typeof rec.detection.slopeHPaPerSec === 'number' ? -rec.detection.slopeHPaPerSec : 0);
       }
       
       if (rec.severity) {
@@ -89,7 +94,7 @@ export function useLiveTelemetry(): LiveTelemetry {
         const nextPoint = {
           time: format(new Date(rec.ts), 'HH:mm:ss'),
           pressure: round((rec.detection?.pressureKPa || 0) * 10, 0), // kPa to hPa
-          flow: round(rec.raw?.flow_Lpm || 0, 2),
+          flow: round((rec.raw?.flow_Lpm || 0) * 16.6667, 0),
           temp: round(rec.raw?.temp_C || 0, 1),
         };
         const next = [...prev, nextPoint];
@@ -130,6 +135,7 @@ export function useLiveTelemetry(): LiveTelemetry {
     leakDetected,
     severity,
     action,
-    leakRateLpm
+    leakRateLpm,
+    currentDropRate
   };
 }

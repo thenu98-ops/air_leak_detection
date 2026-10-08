@@ -29,7 +29,7 @@ export function SensorStatusBar({ lastUpdate, financialLossLKR, leakDetected, se
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-4xl bg-surface px-5 py-4 ring-1 ring-line md:px-6">
+    <div className="flex h-full flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-4xl bg-surface px-5 py-4 ring-1 ring-line md:px-6">
       <div className="flex items-center gap-3">
         <span className={`flex h-10 w-10 items-center justify-center rounded-2xl ${iconColor}`}>
           <CpuIcon className="h-[18px] w-[18px]" aria-hidden="true" />

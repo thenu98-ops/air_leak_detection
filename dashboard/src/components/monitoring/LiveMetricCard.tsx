@@ -59,10 +59,7 @@ export function LiveMetricCard({
               {Math.abs(delta).toFixed(decimals)}
             </span>
           </div>
-          <p className={`mt-3 flex items-center gap-2 text-sm ${muted}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${inBand ? dark ? 'bg-signal' : 'bg-brand' : 'bg-warn'}`} aria-hidden="true" />
-            {inBand ? 'Within' : 'Outside'} normal range {band[0]}–{band[1]} {unit}
-          </p>
+
         </div>
 
         <dl className="grid grid-cols-3 gap-2">

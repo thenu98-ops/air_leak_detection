@@ -7,6 +7,7 @@ import { Monitoring } from './pages/Monitoring';
 import { History } from './pages/History';
 import { LeakDetection } from './pages/LeakDetection';
 import { EnergyMaintenance } from './pages/EnergyMaintenance';
+import { Configuration } from './pages/Configuration';
 import { useLiveTelemetry } from './hooks/useLiveTelemetry';
 import type { View } from './types/telemetry';
 
@@ -39,6 +40,7 @@ export function App() {
                 {view === 'leak_detection' && <LeakDetection telemetry={telemetry} />}
                 {view === 'energy_maintenance' && <EnergyMaintenance telemetry={telemetry} />}
                 {view === 'history' && <History />}
+                {view === 'configuration' && <Configuration telemetry={telemetry} />}
               </motion.div>
             </AnimatePresence>
 

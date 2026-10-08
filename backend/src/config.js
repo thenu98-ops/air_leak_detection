@@ -23,11 +23,12 @@ const CFG = {
     sensorMaxKPa: 1200,
   },
   detection: {
-    windowSec: 120,
-    minSamples: 10,
-    minTestPressureKPa: 90,
+    windowSec: 10,
+    minSamples: 5,
+    minTestPressureKPa: -100, // Disabled for testing
     minR2: 0.85,
-    decayThresholdKPaPerMin: config.normal_drop_rate_kPa_min || 0.5,
+    leakThresholdHPaPerSec: config.normal_drop_rate_hPa_sec || 0.016,
+    usageThresholdHPaPerSec: config.usage_drop_rate_hPa_sec || 0.83,
     confirmWindows: 3,
   },
   severity: [

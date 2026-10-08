@@ -19,17 +19,13 @@ This repository is structured as a monorepo containing the hardware code, backen
 - **Temperature Compensation:** Adjusts raw absolute pressure readings based on ambient temperature using Charles's Law.
 - **Historical Data:** Stores and retrieves sensor readings using MongoDB for long-term trend analysis.
 
-##  Running Locally
+## 🚀 Client Setup Guide (Running Locally)
 
-To run the full stack locally on your machine, you need [Node.js](https://nodejs.org/) installed.
+To run this project on your local machine, you need to have **[Node.js](https://nodejs.org/en/download/)** installed.
 
-### 1. Database Setup
-Ensure you have your MongoDB Atlas credentials saved safely in `dashboard/atlas-credentials.env` (this file is ignored by Git for security):
-```env
-MONGODB_USERNAME="your_user"
-MONGODB_PASSWORD="your_password"
-MONGODB_URI="mongodb+srv://..."
-```
+### 1. Requirements Before You Start
+- Make sure your computer is connected to the internet.
+- Ensure your current IP address is whitelisted in the MongoDB Atlas dashboard. (If you change Wi-Fi networks, you must update the IP whitelist in MongoDB Atlas).
 
 ### 2. Start the Backend
 Open a terminal and run the following commands:
@@ -40,18 +36,48 @@ npm start
 ```
 The backend will connect to your MQTT broker, hook up to MongoDB, and start the API server on `http://localhost:3000`.
 
-### 3. Start the Dashboard
-Open a **new** terminal window and run:
-```bash
-cd dashboard
-npm install
-npm run dev
-```
-This will start the Vite development server. Open the URL provided in the terminal (usually `http://localhost:5173`) in your browser to view the dashboard!
+### 3. Start the Backend Server
+The backend handles the database connection, the MQTT broker connection, and the real-time calculations.
 
-## 📡 Hardware (ESP32)
+1. Open a terminal (Command Prompt or PowerShell).
+2. Navigate to the backend folder:
+   ```bash
+   cd "path\to\air_leak_detection\backend"
+   ```
+3. Install the dependencies (you only need to do this the very first time):
+   ```bash
+   npm install
+   ```
+4. Start the server:
+   ```bash
+   npm start
+   ```
+*You should see "Dashboard API on :3000", "MQTT connected", and "MongoDB connected" in the terminal. Keep this terminal open.*
 
-Navigate to the `arduino/` directory and flash the code to your ESP32 device using the Arduino IDE. 
-- Ensure the ESP32 is configured to connect to your local Wi-Fi.
-- Ensure the ESP32 is pointing to the correct MQTT broker URL.
-- The ESP32 will automatically begin publishing telemetry data, which your local backend will instantly pick up.
+### 4. Start the Frontend Dashboard
+The dashboard is the visual interface.
+
+1. Open a **new, separate** terminal window.
+2. Navigate to the dashboard folder:
+   ```bash
+   cd "path\to\air_leak_detection\dashboard"
+   ```
+3. Install the dependencies (first time only):
+   ```bash
+   npm install
+   ```
+4. Start the website:
+   ```bash
+   npm run dev
+   ```
+5. The terminal will give you a local web link (usually `http://localhost:5173`). Ctrl+Click that link or type it into your web browser to view the dashboard!
+
+### 5. Hardware (ESP32) Setup
+- Navigate to the `iot_pressure_tank/` directory for the firmware source code.
+- Ensure the ESP32 is powered on and connected to a Wi-Fi network that has internet access.
+- The ESP32 will automatically begin publishing telemetry data, which your local backend will instantly pick up and display on your frontend dashboard.
+
+### ⚠️ Troubleshooting Common Errors
+* **`querySrv ENOTFOUND` or MongoDB Timeout:** Your Wi-Fi is blocking the database, or your IP address changed. Try switching to a home Wi-Fi network, or add your new IP address to the MongoDB Atlas Network Access whitelist.
+* **MQTT `ENOTFOUND`:** Your computer is not connected to the internet, or the MQTT broker hostname is unreachable.
+* **No data on Dashboard:** Ensure both the backend terminal and frontend terminal are running simultaneously, and that the ESP32 is turned on.

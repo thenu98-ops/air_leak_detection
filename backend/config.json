@@ -1,7 +1,6 @@
 {
-  "rated_kW": 1.5,
+  "normal_drop_rate_hPa_sec": 0.016,
+  "usage_drop_rate_hPa_sec": 4,
   "electricity_unit_price": 40,
-  "normal_drop_rate_kPa_min": 0.5,
-  "tank_volume_L": 1.5,
-  "compressor_fad_Lpm": 10
+  "tank_volume_L": 0.01
 }
